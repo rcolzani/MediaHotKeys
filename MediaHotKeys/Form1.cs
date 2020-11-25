@@ -63,17 +63,16 @@ namespace MediaHotKeys
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (!PvGlobalMediaHotkeys.Unregiser())
-                MessageBox.Show("Hotkey failed to unregister!");
+                MessageBox.Show("Não foi possível registrar o atalho!");
 
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-             Console.WriteLine("Trying to register SHIFT+ALT+O");
             if (PvGlobalMediaHotkeys.Register())
-                Console.WriteLine("Hotkey registered.");
+                Console.WriteLine("Atalho registrado.");
             else
-                Console.WriteLine("Hotkey failed to register");
+                Console.WriteLine("Atalho falhou ao registrar.");
 
         }
     }
