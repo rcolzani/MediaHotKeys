@@ -3,7 +3,7 @@
 </h1>
 
 <h3 align="center">
-    Execute ações e comandos de mídia com rapidez em teclados que não possuem as teclas de mídia.  
+    Execute comandos de mídia em qualquer janela do Windows. 😁  
 </h3>
 
 <h4 align="center">
@@ -22,8 +22,7 @@ Tabela de conteúdos
 
 ## 💻 Sobre o projeto
 
-⌨ Media Hotkeys - desenvolvido para executar comandos de mídia (play, pause, next track...) em teclados que não possuem as teclas próprias para isto. Como são utilizadas APIs próprias do Windows, funciona para qualquer mídia: Spotify, YouTube, Souncloud, Winamp e tantos outros.  
-
+⌨ Media Hotkeys - desenvolvido para executar comandos de mídia (play, pause, next track...) em teclados que não possuem as teclas próprias para isto. Como são utilizadas APIs próprias do Windows para captar quais teclas estão pressionadas, funciona em qualquer janela e para qualquer mídia: Spotify, YouTube, Souncloud, Winamp e tantos outros.  
 Projeto desenvolvido e aprovado por eu mesmo, já que desenvolvi a partir de uma necessidade pessoal 😁😁
 
 ---
