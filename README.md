@@ -54,7 +54,7 @@ Projeto desenvolvido e aprovado por eu mesmo, já que desenvolvi a partir de uma
 ---
 ## 🦸 Autor
 
-<a href="https://blog.rocketseat.com.br/author/thiago/">
+<a href="https://www.linkedin.com/in/ricardocolzani/">
  <img style="border-radius: 50%;" src="https://avatars1.githubusercontent.com/u/6742811?s=400&u=08e0915ca288e05e885b4bde2193c5cc23d763c9&v=4" width="100px;" alt=""/>
  <br />
  <sub><b>Ricardo Colzani</b></sub></a> <a href="https://www.linkedin.com/in/ricardocolzani/" title="Ricardo Colzani Linkedin"></a>
