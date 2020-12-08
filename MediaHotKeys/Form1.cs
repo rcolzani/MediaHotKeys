@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static MediaHotKeys.GlobalHandle;
 
 namespace MediaHotKeys
 {
@@ -17,7 +18,10 @@ namespace MediaHotKeys
         public Form1()
         {
             InitializeComponent();
-            PvGlobalMediaHotkeys = new MediaHotKeys.GlobalHandle(GlobalHandle.Constants.ALT + GlobalHandle.Constants.SHIFT, Keys.Right,  this);
+            PvGlobalMediaHotkeys = new MediaHotKeys.GlobalHandle(this);
+            PvGlobalMediaHotkeys.AddComando(GlobalHandle.Constants.ALT + GlobalHandle.Constants.SHIFT, Keys.Right, AppCommand.APPCOMMAND_MEDIA_NEXTTRACK);
+            PvGlobalMediaHotkeys.AddComando(GlobalHandle.Constants.ALT + GlobalHandle.Constants.SHIFT, Keys.Left, AppCommand.APPCOMMAND_MEDIA_PREVIOUSTRACK);
+            PvGlobalMediaHotkeys.AddComando(GlobalHandle.Constants.ALT + GlobalHandle.Constants.SHIFT, Keys.Down, AppCommand.APPCOMMAND_MEDIA_PLAY_PAUSE);
         }
 
         private void Form1_Resize(object sender, EventArgs e)
@@ -43,16 +47,33 @@ namespace MediaHotKeys
         protected override void WndProc(ref Message m)
         {
             if (m.Msg == MediaHotKeys.GlobalHandle.Constants.WM_HOTKEY_MSG_ID)
-                HandleHotkey();
+            {
+                foreach (var LcComando in PvGlobalMediaHotkeys.Comandos)
+                {
+                    if (m.WParam.ToInt32() == LcComando.Id)
+                    {
+                        HandleHotkey(LcComando.ComandoExecute);
+                    }
+                }
+
+                
+            }
             base.WndProc(ref m);
         }
 
         /// <summary>
         /// Função que será executada a partir do atalho de teclas pressionado
         /// </summary>
-        private void HandleHotkey()
+        private void HandleHotkey(AppCommand appCommand)
         {
-             Invoke(new MethodInvoker(() => SendMessage(this.Handle, WM_APPCOMMAND, this.Handle, (IntPtr)((int)14 << 16))));
+            try
+            {
+                Invoke(new MethodInvoker(() => SendMessage(this.Handle, WM_APPCOMMAND, this.Handle, (IntPtr)((int)appCommand << 16))));
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         private const int WM_APPCOMMAND = 0x319;
@@ -62,18 +83,15 @@ namespace MediaHotKeys
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (!PvGlobalMediaHotkeys.Unregiser())
-                MessageBox.Show("Não foi possível registrar o atalho!");
+            PvGlobalMediaHotkeys.Unregiser();
 
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            if (PvGlobalMediaHotkeys.Register())
-                Console.WriteLine("Atalho registrado.");
-            else
-                Console.WriteLine("Atalho falhou ao registrar.");
+            PvGlobalMediaHotkeys.Register();
 
         }
+
     }
 }

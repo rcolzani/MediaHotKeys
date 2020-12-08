@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
@@ -27,6 +24,32 @@ namespace MediaHotKeys
             //Mensagem do windows para hotkeys
             public const int WM_HOTKEY_MSG_ID = 0x0312;
         }
+        public enum AppCommand
+        {
+            APPCOMMAND_MEDIA_PAUSE = 47,
+            APPCOMMAND_MEDIA_PLAY = 46,
+            APPCOMMAND_MEDIA_PLAY_PAUSE = 14,
+            APPCOMMAND_MEDIA_PREVIOUSTRACK = 12,
+            APPCOMMAND_MEDIA_NEXTTRACK = 11,
+        }
+        public class Comando
+        {
+            int modifier;
+            int key;
+            IntPtr hWnd;
+            bool registerSuccess;
+            AppCommand comandoExecute;
+            public int Modifier { get => modifier; set => modifier = value; }
+            public int Key { get => key; set => key = value; }
+            public IntPtr HWnd { get => hWnd; set => hWnd = value; }
+            public int Id { get => modifier ^ key ^ hWnd.ToInt32(); }
+            public bool RegisterSuccess { get => registerSuccess; set => registerSuccess = value; }
+            internal AppCommand ComandoExecute { get => comandoExecute; set => comandoExecute = value; }
+        }
+        private List<Comando> comandos;
+        private Form PvForm;
+
+        internal List<Comando> Comandos { get => comandos; set => comandos = value; }
 
         [DllImport("user32.dll")]
         private static extern bool RegisterHotKey(IntPtr hWnd, int id, int fsModifiers, int vk);
@@ -34,10 +57,11 @@ namespace MediaHotKeys
         [DllImport("user32.dll")]
         private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
 
-        private int modifier;
-        private int key;
-        private IntPtr hWnd;
-        private int id;
+        public GlobalHandle(Form form)
+        {
+            comandos = new List<Comando>();
+            PvForm = form;
+        }
 
         /// <summary>
         /// Criação do objeto com o comando que será registrado posteriormente.
@@ -45,35 +69,34 @@ namespace MediaHotKeys
         /// <param name="modifier">Teclas de função: ALT, CTRL e SHIFT</param>
         /// <param name="key">Tecla que precisa ser pressionada junto com as teclas de função</param>
         /// <param name="form">Form como referências</param>
-        public GlobalHandle(int modifier, Keys key, Form form)
+        public void AddComando(int modifier, Keys key, AppCommand comandoExecute)
         {
-            this.modifier = modifier;
-            this.key = (int)key;
-            this.hWnd = form.Handle;
-            id = this.GetHashCode();
-        }
-
-        public override int GetHashCode()
-        {
-            return modifier ^ key ^ hWnd.ToInt32();
+            Comandos.Add(new Comando { Modifier = modifier, Key = (int)key, HWnd = PvForm.Handle, ComandoExecute=comandoExecute });
         }
 
         /// <summary>
         /// Registrar o comando no Windows
         /// </summary>
         /// <returns></returns>
-        public bool Register()
+        public void Register()
         {
-            return RegisterHotKey(hWnd, id, modifier, key);
+            foreach (var comando in Comandos)
+            {
+                comando.RegisterSuccess = RegisterHotKey(comando.HWnd, comando.Id, comando.Modifier, comando.Key);
+            }
         }
 
         /// <summary>
         /// Remover o registro do comando no Windows
         /// </summary>
         /// <returns></returns>
-        public bool Unregiser()
+        public void Unregiser()
         {
-            return UnregisterHotKey(hWnd, id);
+            foreach (var comando in Comandos)
+            {
+                if (comando.RegisterSuccess)
+                    UnregisterHotKey(comando.HWnd, comando.Id);
+            }
         }
 
 
